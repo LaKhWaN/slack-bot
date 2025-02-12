@@ -66,6 +66,9 @@ uvicorn main:app --reload
 
 ---
 
+## 📷 Backend Architecture
+![Backend Architecture](./Architecture.png)
+
 ## 📜 License
 This project is licensed under the **MIT License**.
 
