@@ -75,7 +75,7 @@ async def oauth_callback(request: Request):
                 "client_id": SLACK_CLIENT_ID,
                 "client_secret": SLACK_CLIENT_SECRET,
                 "code": code,
-                "redirect_uri": "https://your-deployed-app.com/slack/oauth/callback",
+                "redirect_uri": "https://slack-bot-qfkl.onrender.com/slack/oauth/callback",
             },
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
