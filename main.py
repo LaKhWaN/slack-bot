@@ -61,7 +61,6 @@ async def slack_events(request: Request):
 
 @app.get("/slack/oauth/callback")
 async def oauth_callback(request: Request):
-    """Handles the OAuth callback from Slack and exchanges the code for an access token."""
     params = request.query_params
     code = params.get("code")
 
@@ -81,9 +80,10 @@ async def oauth_callback(request: Request):
         )
 
         slack_response = response.json()
-        
+        print(slack_response)  # Log response for debugging
+
         if not slack_response.get("ok"):
-            return {"error": slack_response.get("error")}
+            return {"error": slack_response.get("error"), "details": slack_response}
 
         bot_token = slack_response.get("access_token")
         return {"message": "Slack App Installed Successfully!", "token": bot_token}
