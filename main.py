@@ -50,7 +50,7 @@ async def slack_events(request: Request):
     event = event_data.get("event", {})
     event_type = event.get("type")
     event_id = event_data.get("event_id")
-    team_id = event_data.get("team_id")
+    team_id = event.get("team")
 
     if event_type == "app_mention" and event_id not in processed_events:
         processed_events.add(event_id)
@@ -76,7 +76,31 @@ async def slack_events(request: Request):
         except SlackApiError as e:
             print(f"Slack API Error: {e.response['error']}")
 
+    # Handle bot being invited to a channel
+    elif event_type == "member_joined_channel":
+        user = event.get("user")  
+        channel = event.get("channel")  
+
+        bot_token = get_bot_token(team_id)
+        if not bot_token:
+            return {"error": "Bot token not found for this team"}
+
+        client = WebClient(token=bot_token)
+
+        welcome_message = (
+            f"Hey <@{user}>, thanks for having me here! 🤖\n\n"
+            "I am *DroidBot*! 🎉 You can ask me any question by tagging me, "
+            "and I will keep track of up to 5 previous messages.\n\n"
+            "_To get started, just type_ `@DroidBot <your question>`"
+        )
+
+        try:
+            client.chat_postMessage(channel=channel, text=welcome_message)
+        except SlackApiError as e:
+            print(f"Slack API Error: {e.response['error']}")
+
     return {"status": "ok"}
+
 
 @app.get("/slack/oauth/callback")
 async def oauth_callback(request: Request):
@@ -114,7 +138,7 @@ async def oauth_callback(request: Request):
             upsert=True
         )
 
-        return {"message": "Slack App Installed Successfully!"}
+        return {"message": "Slack App Installed Successfully! (Now use /invite @DroidBot to invite in your channel and start using it)"}
 
     except Exception as e:
         return {"error": str(e)}
