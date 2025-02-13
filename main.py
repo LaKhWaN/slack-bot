@@ -11,7 +11,7 @@ from pymongo import MongoClient
 
 load_dotenv()
 
-# Load environment variables
+# Loading environment variables
 SLACK_CLIENT_ID = os.getenv("SLACK_CLIENT_ID")
 SLACK_CLIENT_SECRET = os.getenv("SLACK_CLIENT_SECRET")
 MONGO_URI = os.getenv("MONGO_URI")
@@ -64,6 +64,7 @@ async def slack_events(request: Request):
 
         client = WebClient(token=bot_token)
 
+        # Limiting the history to the last 5 messages
         history = message_history[channel][-5:]
         history.append(user_query)
         message_history[channel].append(user_query)
@@ -76,7 +77,7 @@ async def slack_events(request: Request):
         except SlackApiError as e:
             print(f"Slack API Error: {e.response['error']}")
 
-    # Handle bot being invited to a channel
+    # Welcome message when bot is invited in channel
     elif event_type == "member_joined_channel":
         user = event.get("user")  
         channel = event.get("channel")  
@@ -97,7 +98,10 @@ async def slack_events(request: Request):
         try:
             client.chat_postMessage(channel=channel, text=welcome_message)
         except SlackApiError as e:
-            print(f"Slack API Error: {e.response['error']}")
+            print(f"Slack API Error in channel {channel}: {e.response['error']}")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+    
 
     return {"status": "ok"}
 
