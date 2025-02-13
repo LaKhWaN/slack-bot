@@ -23,8 +23,8 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Connect to MongoDB Atlas
 mongo_client = MongoClient(MONGO_URI)
-db = mongo_client["slack_bot_db"]  # Database name
-tokens_collection = db["tokens"]  # Collection for storing Slack tokens
+db = mongo_client["slack-bot-cluster"] 
+tokens_collection = db["tokens"] 
 
 app = FastAPI()
 message_history = defaultdict(list)
